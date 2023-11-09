@@ -16,7 +16,7 @@ async function bootstrap() {
           format: winston.format.combine(
             winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), // 날짜 형식
             winston.format.prettyPrint({ colorize: true }),
-            winston.format.label({ label: 'foodfood' }), // 프로젝트 명
+            winston.format.label({ label: 'moneyBridge' }), // 프로젝트 명
             winston.format.printf(({ level, message, label, timestamp }) => {
               let logColor
               /*
@@ -51,7 +51,7 @@ async function bootstrap() {
           format: winston.format.combine(
             winston.format.errors({ stack: true }),
             winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-            winston.format.label({ label: 'foodfood' }), // 프로젝트 이름
+            winston.format.label({ label: 'moneyBridge' }), // 프로젝트 이름
             winston.format.printf(({ level, message, label, timestamp }) => {
               let logColor
 
@@ -99,7 +99,6 @@ async function bootstrap() {
     .setDescription('The [project name] API description')
     .setVersion('1.0.0')
     .addBearerAuth()
-    .addTag('user')
     .build()
   const document = SwaggerModule.createDocument(app, swaggerConfig)
   SwaggerModule.setup('swagger', app, document)
