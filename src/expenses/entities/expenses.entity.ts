@@ -22,7 +22,7 @@ export class Expenses extends BaseEntity {
   @Column()
   date: Date
 
-  @Column({ length: 50 })
+  @Column({ length: 15 })
   description: string
 
   @Column({ default: false })
