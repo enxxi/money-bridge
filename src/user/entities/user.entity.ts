@@ -6,25 +6,22 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm'
-import { IsEmail } from 'class-validator'
 import { Budget } from 'src/budget/entities/budget.entity'
 import { Expenses } from 'src/expenses/entities/expenses.entity'
 
 @Entity()
-@Unique(['nickname', 'email'])
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
-  id: number
+  id: string
 
-  @IsEmail()
-  @Column({ length: 50 })
+  @Column({ length: 30, unique: true })
   email: string
 
   @Column()
   password: string
 
-  @Column({ length: 10 })
-  nickname: string
+  @Column({ length: 20, unique: true })
+  username: string
 
   @OneToMany(() => Budget, (budget) => budget.user)
   budgets: Budget[]
