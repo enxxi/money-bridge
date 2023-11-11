@@ -7,5 +7,4 @@ export enum CategoryName {
   COMMUNICATION = '통신비',
   LEISURE_CULTURE = '여가/문화생활',
   SAVING_INVESTMENT = '저축/투자',
-  ETC = '기타',
 }

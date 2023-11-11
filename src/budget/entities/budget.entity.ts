@@ -18,11 +18,11 @@ export class Budget extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({ type: 'date' })
-  startDate: Date
+  @Column()
+  year: number
 
-  @Column({ type: 'date' })
-  endDate: Date
+  @Column()
+  month: number
 
   @Column()
   budget: number
