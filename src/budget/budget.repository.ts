@@ -29,10 +29,6 @@ export class BudgetRepository extends Repository<Budget> {
     return await this.update(budgetId, budgetDto)
   }
 
-  async recommendBudget(budgetDto: BudgetDto.Recommend, userId: string) {
-    // const { categoryId } = budgetDto
-  }
-
   async findById(budgetId: number): Promise<Budget> {
     return await this.findOne({ where: { id: budgetId } })
   }
@@ -61,5 +57,22 @@ export class BudgetRepository extends Repository<Budget> {
     }, {})
 
     return budgetRatio
+  }
+
+  async findByUserAndCategory(
+    userId: string,
+    categoryId: number,
+    year: number,
+    month: number,
+  ) {
+    // 유저, 카테고리, 연도, 월 조건에 맞는 budget을 반환합니다.
+    const budget = await this.createQueryBuilder('budget')
+      .where('budget.user_id = :userId', { userId })
+      .andWhere('budget.category_id = :categoryId', { categoryId })
+      .andWhere('budget.year = :year', { year })
+      .andWhere('budget.month = :month', { month })
+      .getOne()
+
+    return budget
   }
 }

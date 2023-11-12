@@ -20,7 +20,7 @@ export namespace BudgetDto {
     @IsNotEmpty({ message: '각 카테고리별 예산은 필수적으로 입력해야 합니다.' })
     @IsCategoryId({ message: '카테고리 id는 1~9로 설정해주세요.' })
     @IsObject()
-    categoryBudgets: Record<number, number>
+    categoryBudgets: Record<number, number> // <카테고리 id, 예산>
   }
 
   export class Update {
@@ -60,7 +60,7 @@ export namespace BudgetDto {
           validate(value: any, ValidationArguments) {
             // 모든 키가 1~9 사이인지 확인합니다.
             return Object.keys(value).every(
-              (key) => 1 <= Number(key) && Number(key) <= 9,
+              (key) => 1 <= Number(key) && Number(key) <= 8,
             )
           },
         },

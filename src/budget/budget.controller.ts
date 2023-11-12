@@ -25,12 +25,12 @@ export class BudgetController {
     @Body() budgetDto: BudgetDto.Create,
     @GetUser() userId: string,
   ): Promise<string> {
-    return this.budgetService.createBudget(budgetDto, userId)
+    return await this.budgetService.createBudget(budgetDto, userId)
   }
 
   @Post('/recommend')
   async recommendBudget(@Body() budgetDto: BudgetDto.Recommend) {
-    return this.budgetService.recommendBudget(budgetDto)
+    return await this.budgetService.recommendBudget(budgetDto)
   }
 
   @Put(':id')
