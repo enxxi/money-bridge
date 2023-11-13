@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Body,
+  Query,
   UseGuards,
   ValidationPipe,
   UsePipes,
@@ -26,7 +27,6 @@ export class ExpensesController {
     @Body() expensesDto: ExpensesDto.Create,
     @GetUser() userId: string,
   ) {
-    console.log(expensesDto)
     return await this.expensesService.createExpenses(expensesDto, userId)
   }
 
@@ -43,5 +43,36 @@ export class ExpensesController {
       userId,
       expensesId,
     )
+  }
+
+  @Get()
+  async getExpensesList(
+    @Query()
+    expensesDto: ExpensesDto.GetList,
+    @GetUser() userId: string,
+  ) {
+    return await this.expensesService.getExpensesList(expensesDto, userId)
+  }
+  @Get('recommend')
+  async recommendExpenses(@GetUser() userId: string) {
+    await this.expensesService.recommendDailyExpenses(userId)
+  }
+
+  @Get('today')
+  async todayExpenses() {}
+  @Get(':id')
+  async getExpensesDetail(
+    @Param('id') expensesId: number,
+    @GetUser() userId: string,
+  ) {
+    return await this.expensesService.getExpensesDetail(expensesId, userId)
+  }
+
+  @Delete(':id')
+  async deleteExpenses(
+    @Param('id') expensesId: number,
+    @GetUser() userId: string,
+  ) {
+    return await this.expensesService.deleteExpenses(expensesId, userId)
   }
 }

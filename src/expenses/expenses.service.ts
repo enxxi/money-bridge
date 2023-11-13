@@ -23,18 +23,7 @@ export class ExpensesService {
     try {
       const { categoryId, date } = expensesDto
 
-      // 지출 일자에서 연도와 월 추출
-      const dateObj = new Date(date)
-      const year = dateObj.getFullYear()
-      const month = dateObj.getMonth() + 1
-
-      // 조건에 맞는 예산을 가져옵니다.
-      const budget = await this.budgetRepository.findByUserAndCategory(
-        userId,
-        categoryId,
-        year,
-        month,
-      )
+      const budget = await this.getBudget(userId, categoryId, date)
 
       if (!budget)
         throw new NotFoundException('이번 달 예산을 찾을 수 없습니다.')
@@ -44,12 +33,10 @@ export class ExpensesService {
         userId,
         budget.id,
       )
-
       return '지출 등록을 성공하였습니다.'
     } catch (error) {
-      console.log(error)
       if (error instanceof NotFoundException) throw error
-      throw new InternalServerErrorException('지출 등록을 실패하였습니다.')
+      this.handleError(error, '지출 등록을 실패하였습니다.')
     }
   }
 
@@ -61,28 +48,119 @@ export class ExpensesService {
     // 지출을 수정하는 함수
     try {
       // params로 받은 id로 지출 내역을 찾습니다.
-      const expenses = await this.expensesRepository.findById(expensesId)
-
-      if (!expenses) {
-        throw new NotFoundException('해당 id의 지출 내역을 찾을 수 없습니다.')
-      }
+      const expenses = await this.getExpenses(expensesId)
 
       // 현재 로그인 한 사용자가 지출 내역 작성자가 맞는지 검증합니다.
-      if (expenses.user.id !== userId) {
-        throw new ForbiddenException('수정 권한이 없습니다.')
-      }
-
+      this.checkAccess(userId, expenses, '수정')
       await this.expensesRepository.updateExpenses(expensesDto, expensesId)
       return '지출 수정에 성공하였습니다.'
     } catch (error) {
-      console.log(error)
-      if (
-        error instanceof NotFoundException ||
-        error instanceof ForbiddenException
-      ) {
+      if (error instanceof NotFoundException || ForbiddenException) {
         throw error
       }
-      throw new InternalServerErrorException('지출 수정에 실패하였습니다.')
+      this.handleError(error, '지출 수정에 실패하였습니다.')
+    }
+  }
+
+  async getExpensesList(expensesDto: ExpensesDto.GetList, userId: string) {
+    // 지출 내역을 반환하는 함수
+    try {
+      // startDate, endDate가 없을 경우 기본값 설정
+      if (!expensesDto.startDate || !expensesDto.endDate) {
+        const today = new Date()
+        const twoWeeksAgo = new Date()
+        twoWeeksAgo.setDate(today.getDate() - 14)
+        expensesDto.startDate = twoWeeksAgo.toISOString()
+        expensesDto.endDate = today.toISOString()
+      }
+
+      const expenses = await this.expensesRepository.getExpensesList(
+        userId,
+        expensesDto,
+      )
+
+      // (합계제외 지출을 제외한) 전체 지출 총액과 카테고리별 지출 총액
+      const { totalAmount, categoryTotals } = expenses.reduce(
+        (acc, expense) => {
+          acc.totalAmount += expense.isExcluded ? 0 : expense.expenses
+          acc.categoryTotals[expense.category.id] =
+            (acc.categoryTotals[expense.category.id] || 0) +
+            (expense.isExcluded ? 0 : expense.expenses)
+          return acc
+        },
+        { totalAmount: 0, categoryTotals: {} },
+      )
+
+      return {
+        message: '지출 내역 목록 반환에 성공했습니다.',
+        expenses,
+        totalAmount,
+        categoryTotals,
+      }
+    } catch (error) {
+      this.handleError(error, '지출 내역 목록 반환에 실패했습니다.')
+    }
+  }
+
+  async getExpensesDetail(expensesId: number, userId: string) {
+    // 지출 상세 정보를 반환하는 함수
+    try {
+      const expenses = await this.getExpenses(expensesId)
+
+      // 현재 로그인 한 사용자가 지출 내역 작성자가 맞는지 검증합니다.
+      this.checkAccess(userId, expenses, '조회')
+      return { message: '지출 내역 상세 조회에 성공했습니다.', expenses }
+    } catch (error) {
+      if (error instanceof NotFoundException || ForbiddenException) throw error
+      this.handleError(error, '지출 내역 상세 조회에 실패했습니다.')
+    }
+  }
+
+  async deleteExpenses(expensesId: number, userId: string) {
+    try {
+      const expenses = await this.getExpenses(expensesId)
+
+      // 현재 로그인 한 사용자가 지출 내역 작성자가 맞는지 검증합니다.
+      this.checkAccess(userId, expenses, '삭제')
+      await this.expensesRepository.deleteExpenses(expensesId)
+      return '지출 내역 삭제에 성공했습니다.'
+    } catch (error) {
+      if (error instanceof NotFoundException || ForbiddenException) throw error
+      this.handleError(error, '지출 내역 삭제에 실패했습니다.')
+    }
+  }
+
+  private handleError(error: any, message: string) {
+    console.log(error)
+    throw new InternalServerErrorException(message)
+  }
+
+  private async getBudget(userId: string, categoryId: number, date: Date) {
+    // 지출 일자에서 연도와 월 추출
+    const dateObj = new Date(date)
+    const year = dateObj.getFullYear()
+    const month = dateObj.getMonth() + 1
+
+    // 조건에 맞는 예산을 가져옵니다.
+    return await this.budgetRepository.findByUserAndCategory(
+      userId,
+      categoryId,
+      year,
+      month,
+    )
+  }
+
+  private async getExpenses(expensesId) {
+    const expenses = await this.expensesRepository.findById(expensesId)
+    if (!expenses) {
+      throw new NotFoundException('해당 id의 지출 내역을 찾을 수 없습니다.')
+    }
+    return expenses
+  }
+
+  private checkAccess(userId, expenses, action) {
+    if (expenses.user.id !== userId) {
+      throw new ForbiddenException(`${action} 권한이 없습니다.`)
     }
   }
 }

@@ -30,9 +30,49 @@ export class ExpensesRepository extends Repository<Expenses> {
   }
 
   async findById(expensesId: number): Promise<Expenses> {
-    return await this.findOne({
-      where: { id: expensesId },
-      relations: ['user'],
-    })
+    return await this.createQueryBuilder('expenses')
+      .where('expenses.id = :id', { id: expensesId })
+      .leftJoin('expenses.user', 'user')
+      .addSelect('user.id')
+      .getOne()
+  }
+
+  async getExpensesList(userId, expensesDto) {
+    const { startDate, endDate, categoryId, minAmount, maxAmount } = expensesDto
+
+    // 쿼리빌더에 userId와 기간을 설정 (필수 조건)
+    let query = this.createQueryBuilder('expenses')
+      .select([
+        'expenses.id',
+        'expenses.expenses',
+        'expenses.date',
+        'expenses.createdAt',
+        'expenses.isExcluded',
+      ])
+      .leftJoinAndSelect('expenses.category', 'category')
+      .where('expenses.user_id = :userId', { userId })
+      .andWhere('expenses.date BETWEEN :startDate AND :endDate', {
+        startDate,
+        endDate,
+      })
+
+    // 검색 조건 쿼리에 categoryId, minAmount, maxAmount가 있다면 검색
+    if (categoryId) {
+      query = query.andWhere('expenses.category_id = :categoryId', {
+        categoryId,
+      })
+    }
+    if (minAmount) {
+      query = query.andWhere('expenses.expenses > :minAmount', { minAmount })
+    }
+    if (maxAmount) {
+      query = query.andWhere('expenses.expenses < :maxAmount', { maxAmount })
+    }
+
+    return await query.getMany()
+  }
+
+  async deleteExpenses(expensesId: number) {
+    await this.delete(expensesId)
   }
 }

@@ -7,6 +7,7 @@ import {
   IsIn,
   IsOptional,
 } from 'class-validator'
+import { Type } from 'class-transformer'
 
 export namespace ExpensesDto {
   export class Create {
@@ -51,5 +52,28 @@ export namespace ExpensesDto {
     @IsIn([1, 2, 3, 4, 5, 6, 7, 8], { message: '카테고리 id는 1~8입니다.' })
     @IsNumber()
     categoryId?: number
+  }
+
+  export class GetList {
+    @IsString()
+    startDate: string
+
+    @IsString()
+    endDate: string
+
+    @IsOptional()
+    @IsNumber()
+    @Type(() => Number)
+    categoryId?: number
+
+    @IsOptional()
+    @IsNumber()
+    @Type(() => Number)
+    minAmount?: number
+
+    @IsOptional()
+    @IsNumber()
+    @Type(() => Number)
+    maxAmount?: number
   }
 }
