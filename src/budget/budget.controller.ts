@@ -5,7 +5,6 @@ import {
   Body,
   UseGuards,
   Param,
-  UnauthorizedException,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'

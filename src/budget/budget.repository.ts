@@ -8,16 +8,16 @@ export class BudgetRepository extends Repository<Budget> {
   async createBudget(
     // 예산을 설정하는 함수. user와 category의 id를 가지고 관계를 설정함.
     userId: string,
-    year: number,
-    month: number,
+    startDate: Date,
+    endDate: Date,
     categoryId: number,
     budget: number,
   ): Promise<void> {
     const newBudget = this.create({
       user: { id: userId },
       category: { id: categoryId },
-      year,
-      month,
+      startDate,
+      endDate,
       budget,
     })
     await this.save(newBudget)
@@ -25,7 +25,6 @@ export class BudgetRepository extends Repository<Budget> {
 
   async updateBudget(budgetId: number, budgetDto: BudgetDto.Update) {
     // 예산을 수정하는 함수
-    // const { categoryId, ...newBudget } = budgetDto
     return await this.update(budgetId, budgetDto)
   }
 
@@ -59,20 +58,15 @@ export class BudgetRepository extends Repository<Budget> {
     return budgetRatio
   }
 
-  async findByUserAndCategory(
-    userId: string,
-    categoryId: number,
-    year: number,
-    month: number,
-  ) {
-    // 유저, 카테고리, 연도, 월 조건에 맞는 budget을 반환합니다.
+  async findBudgetByDate(userId: string, categoryId: number, date: Date) {
+    // 해당 사용자의 지출 일자가 포함된 예산을 찾는 함수
     const budget = await this.createQueryBuilder('budget')
       .where('budget.user_id = :userId', { userId })
       .andWhere('budget.category_id = :categoryId', { categoryId })
-      .andWhere('budget.year = :year', { year })
-      .andWhere('budget.month = :month', { month })
+      .andWhere('budget.startDate <= :date', { date })
+      .andWhere('budget.endDate >= :date', { date })
       .getOne()
-
+    console.log(userId, budget)
     return budget
   }
 }

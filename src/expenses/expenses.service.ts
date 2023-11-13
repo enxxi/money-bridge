@@ -23,10 +23,13 @@ export class ExpensesService {
     try {
       const { categoryId, date } = expensesDto
 
-      const budget = await this.getBudget(userId, categoryId, date)
-
+      const budget = await this.budgetRepository.findBudgetByDate(
+        userId,
+        categoryId,
+        date,
+      )
       if (!budget)
-        throw new NotFoundException('이번 달 예산을 찾을 수 없습니다.')
+        throw new NotFoundException('해당 기간의 예산을 찾을 수 없습니다.')
 
       await this.expensesRepository.createExpenses(
         expensesDto,
@@ -130,23 +133,51 @@ export class ExpensesService {
     }
   }
 
+  async recommendDailyExpenses(userId) {
+    try {
+      const today = new Date()
+      const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 2)
+      const lastDayOfMonth = new Date(
+        today.getFullYear(),
+        today.getMonth() + 1,
+        0,
+      )
+      console.log(firstDayOfMonth, lastDayOfMonth)
+      for (let i of [1, 2, 3, 4, 5, 6, 7, 8]) {
+        const categoryId = i
+        // 이번 달 카테고리 예산
+        const budget = await this.getBudget(userId, categoryId, today)
+        // 이번 달 카테고리 지출 금액
+
+        // const spentThisMonth = await this.getExpensesByCategory(
+        //   userId,
+        //   categoryId,
+        //   // 오늘이 포함된 달
+        // )
+        console.log(budget)
+      }
+    } catch (error) {
+      this.handleError(error, '오늘 지출 추천에 실패했습니다.')
+    }
+  }
+  async todayExpenses() {
+    try {
+    } catch (error) {
+      this.handleError(error, '오늘 지출 추천에 실패했습니다.')
+    }
+  }
+
   private handleError(error: any, message: string) {
     console.log(error)
     throw new InternalServerErrorException(message)
   }
 
   private async getBudget(userId: string, categoryId: number, date: Date) {
-    // 지출 일자에서 연도와 월 추출
-    const dateObj = new Date(date)
-    const year = dateObj.getFullYear()
-    const month = dateObj.getMonth() + 1
-
     // 조건에 맞는 예산을 가져옵니다.
-    return await this.budgetRepository.findByUserAndCategory(
+    return await this.budgetRepository.findBudgetByDate(
       userId,
       categoryId,
-      year,
-      month,
+      date,
     )
   }
 

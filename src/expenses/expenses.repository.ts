@@ -17,6 +17,7 @@ export class ExpensesRepository extends Repository<Expenses> {
       budget: { id: budgetId },
       ...expensesDto,
     })
+    console.log(newExpenses)
     await this.save(newExpenses)
   }
 
@@ -75,4 +76,6 @@ export class ExpensesRepository extends Repository<Expenses> {
   async deleteExpenses(expensesId: number) {
     await this.delete(expensesId)
   }
+  async recommendExpenses() {}
+  async todayExpenses() {}
 }

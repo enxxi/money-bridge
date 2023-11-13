@@ -18,14 +18,18 @@ export class BudgetService {
   async createBudget(budgetDto: BudgetDto.Create, userId: string) {
     // 예산을 설정하는 함수.
     try {
+      const { endDate } = budgetDto
+      const endDateWithTime = new Date(endDate)
+      endDateWithTime.setHours(23, 59, 59, 999)
+
       // 각 카테고리에 대해 예산을 설정
       for (const [categoryId, budget] of Object.entries(
         budgetDto.categoryBudgets,
       )) {
         await this.budgetRepository.createBudget(
           userId,
-          budgetDto.year,
-          budgetDto.month,
+          budgetDto.startDate,
+          endDateWithTime,
           Number(categoryId),
           budget,
         )
@@ -45,6 +49,10 @@ export class BudgetService {
       if (!budget) {
         throw new NotFoundException('해당 id를 가진 예산을 찾을 수 없습니다.')
       }
+
+      budgetDto.endDate = this.setEndDateWithTime(budgetDto)
+      console.log(budgetDto)
+
       await this.budgetRepository.updateBudget(budgetId, budgetDto)
 
       return '예산 수정에 성공했습니다.'
@@ -57,7 +65,6 @@ export class BudgetService {
   async recommendBudget(budgetDto: BudgetDto.Recommend) {
     try {
       const budgetRatio = await this.budgetRepository.getBudgetRatio()
-      console.log(budgetRatio)
 
       // 사용자가 입력한 총 예산
       const totalBudget = Number(budgetDto.total)
@@ -87,5 +94,14 @@ export class BudgetService {
     } catch (error) {
       throw new InternalServerErrorException('예산 추천에 실패했습니다.')
     }
+  }
+
+  private setEndDateWithTime(budgetDto) {
+    console.log(budgetDto)
+    const { endDate } = budgetDto
+    const endDateWithTime = new Date(endDate)
+    endDateWithTime.setHours(23, 59, 59, 999)
+    console.log(endDateWithTime)
+    return endDateWithTime
   }
 }

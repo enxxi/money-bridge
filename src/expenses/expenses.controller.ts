@@ -27,6 +27,7 @@ export class ExpensesController {
     @Body() expensesDto: ExpensesDto.Create,
     @GetUser() userId: string,
   ) {
+    console.log(userId)
     return await this.expensesService.createExpenses(expensesDto, userId)
   }
 

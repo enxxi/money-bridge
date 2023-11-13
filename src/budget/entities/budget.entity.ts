@@ -19,10 +19,10 @@ export class Budget extends BaseEntity {
   id: number
 
   @Column()
-  year: number
+  startDate: Date
 
   @Column()
-  month: number
+  endDate: Date
 
   @Column()
   budget: number
