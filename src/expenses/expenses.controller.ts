@@ -27,7 +27,6 @@ export class ExpensesController {
     @Body() expensesDto: ExpensesDto.Create,
     @GetUser() userId: string,
   ) {
-    console.log(userId)
     return await this.expensesService.createExpenses(expensesDto, userId)
   }
 
@@ -56,11 +55,13 @@ export class ExpensesController {
   }
   @Get('recommend')
   async recommendExpenses(@GetUser() userId: string) {
-    await this.expensesService.recommendDailyExpenses(userId)
+    return await this.expensesService.recommendDailyExpenses(userId)
   }
 
   @Get('today')
-  async todayExpenses() {}
+  async todayExpenses(@GetUser() userId: string) {
+    return await this.expensesService.todayExpenses(userId)
+  }
   @Get(':id')
   async getExpensesDetail(
     @Param('id') expensesId: number,

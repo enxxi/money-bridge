@@ -66,7 +66,6 @@ export class BudgetRepository extends Repository<Budget> {
       .andWhere('budget.startDate <= :date', { date })
       .andWhere('budget.endDate >= :date', { date })
       .getOne()
-    console.log(userId, budget)
     return budget
   }
 }

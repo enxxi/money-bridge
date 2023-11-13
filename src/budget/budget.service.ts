@@ -51,7 +51,6 @@ export class BudgetService {
       }
 
       budgetDto.endDate = this.setEndDateWithTime(budgetDto)
-      console.log(budgetDto)
 
       await this.budgetRepository.updateBudget(budgetId, budgetDto)
 
@@ -97,11 +96,9 @@ export class BudgetService {
   }
 
   private setEndDateWithTime(budgetDto) {
-    console.log(budgetDto)
     const { endDate } = budgetDto
     const endDateWithTime = new Date(endDate)
     endDateWithTime.setHours(23, 59, 59, 999)
-    console.log(endDateWithTime)
     return endDateWithTime
   }
 }

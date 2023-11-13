@@ -136,32 +136,126 @@ export class ExpensesService {
   async recommendDailyExpenses(userId) {
     try {
       const today = new Date()
-      const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 2)
-      const lastDayOfMonth = new Date(
+      let totalAmount = 0
+      let categoryBudgets = []
+      const minBudget = 1000 // 최소 예산
+      const totalDays = new Date(
         today.getFullYear(),
         today.getMonth() + 1,
         0,
-      )
-      console.log(firstDayOfMonth, lastDayOfMonth)
+      ).getDate()
+      const remainingDays = totalDays - today.getDate() + 1
+
       for (let i of [1, 2, 3, 4, 5, 6, 7, 8]) {
         const categoryId = i
-        // 이번 달 카테고리 예산
-        const budget = await this.getBudget(userId, categoryId, today)
-        // 이번 달 카테고리 지출 금액
+        // 이번 기간 카테고리 예산
+        const budget = await this.budgetRepository.findBudgetByDate(
+          userId,
+          categoryId,
+          today,
+        )
 
-        // const spentThisMonth = await this.getExpensesByCategory(
-        //   userId,
-        //   categoryId,
-        //   // 오늘이 포함된 달
-        // )
-        console.log(budget)
+        // 이번 달 카테고리 지출 금액
+        const amount = await this.expensesRepository.getExpensesSpent(budget.id)
+
+        // 총 지출 금액
+        totalAmount += amount
+
+        // 남은 예산 계산
+        let remainingBudget = budget.budget - amount
+        remainingBudget = remainingBudget < 0 ? 0 : remainingBudget
+
+        // 일별 예산 계산
+        let dailyBudget =
+          Math.round(remainingBudget / remainingDays / 100) * 100
+
+        //최소 예산 설정
+        dailyBudget = dailyBudget < minBudget ? minBudget : dailyBudget
+
+        categoryBudgets.push({
+          categoryId: categoryId,
+          dailyBudget: dailyBudget,
+        })
       }
+
+      const totalDailyBudget = categoryBudgets.reduce(
+        (acc, cur) => acc + cur.dailyBudget,
+        0,
+      )
+
+      let message = '절약을 잘 실천하고 계세요! 오늘도 절약 도전!'
+      if (totalDailyBudget < minBudget * 8) {
+        message = '예산이 어렵습니다. 가능한 한 절약해보세요!'
+      } else if (totalDailyBudget < minBudget * 8 * 0.7) {
+        message = '적당히 사용 중입니다. 계속 좋은 소비 습관을 유지해보세요!'
+      } else if (totalDailyBudget > minBudget * 8) {
+        message =
+          '잘 아끼고 있습니다. 이대로 유지하면 좋은 소비 습관이 될 것입니다!'
+      }
+      return { totalDailyBudget, categoryBudgets, message }
     } catch (error) {
       this.handleError(error, '오늘 지출 추천에 실패했습니다.')
     }
   }
-  async todayExpenses() {
+
+  async todayExpenses(userId) {
     try {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+
+      const tomorrow = new Date(today)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+
+      const totalDays = new Date(
+        today.getFullYear(),
+        today.getMonth() + 1,
+        0,
+      ).getDate()
+
+      let totalSpent = 0
+      let categoryExpenses = []
+
+      for (let i of [1, 2, 3, 4, 5, 6, 7, 8]) {
+        const categoryId = i
+
+        // 이번 기간 카테고리 예산
+        const budget = await this.budgetRepository.findBudgetByDate(
+          userId,
+          categoryId,
+          today,
+        )
+
+        // 오늘 카테고리 지출 금액
+        const amountSpent = Number(
+          await this.expensesRepository.findByDate(
+            userId,
+            categoryId,
+            today,
+            tomorrow,
+          ),
+        )
+
+        // 총 지출 금액
+        totalSpent += amountSpent
+
+        // 일별 적정 예산 계산
+        const appropriateAmount =
+          Math.round(budget.budget / totalDays / 100) * 100
+
+        // 위험도 계산
+        const dangerRate = (amountSpent / appropriateAmount) * 100
+
+        categoryExpenses.push({
+          categoryId: categoryId,
+          appropriateAmount: appropriateAmount,
+          amountSpent: amountSpent,
+          dangerRate: dangerRate,
+        })
+      }
+      return {
+        totalSpent,
+        categoryExpenses,
+      }
     } catch (error) {
       this.handleError(error, '오늘 지출 추천에 실패했습니다.')
     }
@@ -170,15 +264,6 @@ export class ExpensesService {
   private handleError(error: any, message: string) {
     console.log(error)
     throw new InternalServerErrorException(message)
-  }
-
-  private async getBudget(userId: string, categoryId: number, date: Date) {
-    // 조건에 맞는 예산을 가져옵니다.
-    return await this.budgetRepository.findBudgetByDate(
-      userId,
-      categoryId,
-      date,
-    )
   }
 
   private async getExpenses(expensesId) {

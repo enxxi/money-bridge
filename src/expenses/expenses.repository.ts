@@ -76,6 +76,22 @@ export class ExpensesRepository extends Repository<Expenses> {
   async deleteExpenses(expensesId: number) {
     await this.delete(expensesId)
   }
-  async recommendExpenses() {}
-  async todayExpenses() {}
+  async getExpensesSpent(budgetId: number) {
+    const amount = await this.createQueryBuilder('expenses')
+      .select('SUM(expenses.expenses)', 'amount')
+      .andWhere('expenses.budget_id=:budgetId', { budgetId })
+      .getRawOne()
+    return amount.amount || 0
+  }
+
+  async findByDate(userId, categoryId, today, tomorrow) {
+    const expenses = await this.createQueryBuilder('expenses')
+      .select('SUM(expenses.expenses)', 'amount')
+      .where('expenses.date >= :today', { today: today })
+      .andWhere('expenses.date < :tomorrow', { tomorrow: tomorrow })
+      .andWhere('expenses.user_id = :userId', { userId })
+      .andWhere('expenses.category_id=:categoryId', { categoryId })
+      .getRawOne()
+    return expenses.amount || 0
+  }
 }
