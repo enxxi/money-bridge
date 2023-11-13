@@ -17,7 +17,7 @@ export class Expenses extends BaseEntity {
   id: number
 
   @Column()
-  amount: number
+  expenses: number
 
   @Column()
   date: Date
