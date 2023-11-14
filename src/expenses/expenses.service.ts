@@ -134,6 +134,7 @@ export class ExpensesService {
   }
 
   async recommendDailyExpenses(userId) {
+    // 오늘의 지출을 추천하는 함수
     try {
       const today = new Date()
       let totalAmount = 0

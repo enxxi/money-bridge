@@ -84,14 +84,34 @@ export class ExpensesRepository extends Repository<Expenses> {
     return amount.amount || 0
   }
 
-  async findByDate(userId, categoryId, today, tomorrow) {
-    const expenses = await this.createQueryBuilder('expenses')
+  async findByDate(userId, categoryId, startDate, endDate) {
+    // 사용자의 특정 기간에 대한 총 지출액을 반환
+    const query = this.createQueryBuilder('expenses')
       .select('SUM(expenses.expenses)', 'amount')
-      .where('expenses.date >= :today', { today: today })
-      .andWhere('expenses.date < :tomorrow', { tomorrow: tomorrow })
+      .where('expenses.date >= :startDate', { startDate })
+      .andWhere('expenses.date < :endDate', { endDate })
       .andWhere('expenses.user_id = :userId', { userId })
-      .andWhere('expenses.category_id=:categoryId', { categoryId })
-      .getRawOne()
+
+    if (categoryId) {
+      query.andWhere('expenses.category_id=:categoryId', { categoryId })
+    }
+    const expenses = await query.getRawOne()
     return expenses.amount || 0
+  }
+
+  async getSumByCategory(userId, startDate, endDate) {
+    const query = this.createQueryBuilder('expenses')
+      .select('expenses.category_id', 'categoryId')
+      .addSelect('SUM(expenses.expenses)', 'amount')
+      .where('expenses.date >= :startDate', { startDate })
+      .andWhere('expenses.date < :endDate', { endDate })
+      .andWhere('expenses.user_id = :userId', { userId })
+      .groupBy('expenses.category_id')
+
+    const expenses = await query.getRawMany()
+    return expenses.map((e) => ({
+      categoryId: e.categoryId,
+      amount: e.amount || 0,
+    }))
   }
 }
