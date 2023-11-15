@@ -114,4 +114,18 @@ export class ExpensesRepository extends Repository<Expenses> {
       amount: e.amount || 0,
     }))
   }
+
+  async findByDayOfWeek(userId, today, dayOfWeek) {
+    const todayString = `${today.getFullYear()}-${
+      today.getMonth() + 1
+    }-${today.getDate()}`
+
+    return this.createQueryBuilder('expenses')
+      .where('expenses.user_id = :userId', { userId })
+      .andWhere('EXTRACT(DOW FROM expenses.date) = :dayOfWeek', { dayOfWeek })
+      .andWhere(`TO_CHAR(expenses.date, 'YYYY-MM-DD') != :todayString`, {
+        todayString,
+      })
+      .getMany()
+  }
 }

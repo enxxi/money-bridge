@@ -67,9 +67,14 @@ export class ExpensesController {
     return await this.expensesService.todayExpenses(userId)
   }
 
-  @Get('statistics/lastmonth')
+  @Get('statistics/monthly')
   async getRatioComparedToLastMonth(@GetUser() userId: string) {
     return await this.statisticsService.getRatioComparedToLastMonth(userId)
+  }
+
+  @Get('statistics/daily')
+  async getRatioComparedToLastWeek(@GetUser() userId: string) {
+    return await this.statisticsService.getRatioComparedToLastWeek(userId)
   }
 
   @Get(':id')
