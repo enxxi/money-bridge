@@ -7,6 +7,7 @@ import { TypeOrmExModule } from 'src/common/decorator/typeorm-ex.module'
 import { ExpensesRepository } from './expenses.repository'
 import { BudgetRepository } from 'src/budget/budget.repository'
 import { PassportModule } from '@nestjs/passport'
+import { StatisticsService } from './statistics.service'
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { PassportModule } from '@nestjs/passport'
     TypeOrmExModule.forCustomRepository([ExpensesRepository, BudgetRepository]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
-  providers: [ExpensesService],
+  providers: [ExpensesService, StatisticsService],
   controllers: [ExpensesController],
 })
 export class ExpensesModule {}

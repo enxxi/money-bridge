@@ -15,11 +15,15 @@ import { ExpensesService } from './expenses.service'
 import { ExpensesDto } from './dto/expensesDto'
 import { GetUser } from 'src/auth/get-user.decorator'
 import { AuthGuard } from '@nestjs/passport'
+import { StatisticsService } from './statistics.service'
 
 @UseGuards(AuthGuard())
 @Controller('expenses')
 export class ExpensesController {
-  constructor(private readonly expensesService: ExpensesService) {}
+  constructor(
+    private readonly expensesService: ExpensesService,
+    private readonly statisticsService: StatisticsService,
+  ) {}
 
   @UsePipes(ValidationPipe)
   @Post()
@@ -62,6 +66,17 @@ export class ExpensesController {
   async todayExpenses(@GetUser() userId: string) {
     return await this.expensesService.todayExpenses(userId)
   }
+
+  @Get('statistics/monthly')
+  async getRatioComparedToLastMonth(@GetUser() userId: string) {
+    return await this.statisticsService.getRatioComparedToLastMonth(userId)
+  }
+
+  @Get('statistics/daily')
+  async getRatioComparedToLastWeek(@GetUser() userId: string) {
+    return await this.statisticsService.getRatioComparedToLastWeek(userId)
+  }
+
   @Get(':id')
   async getExpensesDetail(
     @Param('id') expensesId: number,
