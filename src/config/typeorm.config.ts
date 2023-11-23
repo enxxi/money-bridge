@@ -1,6 +1,6 @@
-import { ConfigService } from '@nestjs/config';
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { ConfigService } from '@nestjs/config'
+import { TypeOrmModuleOptions } from '@nestjs/typeorm'
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
 
 export const typeORMConfig = async (
   configService: ConfigService,
@@ -16,5 +16,5 @@ export const typeORMConfig = async (
     synchronize: configService.get<boolean>('DB_SYNCHRONIZE') || false,
     namingStrategy: new SnakeNamingStrategy(),
     // logging: true,
-  };
-};
+  }
+}
