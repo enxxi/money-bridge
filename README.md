@@ -1,73 +1,125 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+<div align="center">
+</div>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# 예산 관리 어플리케이션 : money bridge
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+<br/>
 
-## Description
+## Table of Contents
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [개요](#개요)
+- [API Reference](#api-reference)
+- [ERD](#ERD)
+- [프로젝트 진행 및 이슈 관리](#프로젝트-진행-및-이슈-관리)
+- [구현과정(설계 및 의도)](<#구현과정(설계-및-의도)>)
+- [TIL 및 회고](#til-및-회고)
+- [Authors](#authors)
 
-## Installation
+<br/>
 
-```bash
-$ npm install
+## 개요
+
+**개인 재무를 관리하고 지출을 추적하는 애플리케이션으로, 예산 설정과 지출 모니터링을 통해 재무 목표를 달성하는 데 도움을 줍니다.**
+본 서비스는 개인 재무 관리 및 지출 추적을 위한 애플리케이션입니다.
+이 앱은 사용자들이 예산을 설정하고 지출을 모니터링하여 재무 목표를 달성하는 데 도움을 줍니다. 사용자들은 이 앱을 통해 개인 재무 상황을 효과적으로 관리할 수 있으며, 지출 패턴을 파악하여 지출을 조절하고 저축을 증진할 수 있습니다.
+또한, 이 앱은 사용자들에게 재무 목표 설정과 관련된 조언과 안내도 제공합니다. 이를 통해 개인 재무 상황을 개선하고 더 나은 재무 목표를 세울 수 있습니다.
+<br/>
+
+## Skils
+
+<div align="center">
+
+언어 및 사용 도구 <br/> ![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white) ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white) ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens) ![Swagger](https://img.shields.io/badge/swagger-%ffffff.svg?style=for-the-badge&logo=swagger&logoColor=white)
+<br/>
+데이터 베이스 <br/>![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)<br/>
+
+</div>
+
+<br/>
+
+## Directory
+
+<details>
+<summary> 파일 구조 보기 </summary>
+
+```
+src
+│  app.module.ts
+│  main.ts
+│
+├─auth
+│  │  auth.controller.spec.ts
+│  │  auth.controller.ts
+│  │  auth.module.ts
+│  │  auth.service.spec.ts
+│  │  auth.service.ts
+│  │  get-user.decorator.ts
+│  │  jwt-refresh.strategy.ts
+│  │  jwt.strategy.ts
+│  │
+│  ├─dto
+│  │      authDto.ts
+│  │
+│  └─entities
+│          auth.entity.ts
+│
+├─budget
+│  │  budget.controller.ts
+│  │  budget.module.ts
+│  │  budget.repository.ts
+│  │  budget.service.ts
+│  │
+│  ├─dto
+│  │      budgetDto.ts
+│  │
+│  └─entities
+│          budget.entity.ts
+│
+├─category
+│  │  category.controller.ts
+│  │  category.module.ts
+│  │  category.service.ts
+│  │
+│  ├─entities
+│  │      category.entity.ts
+│  │
+│  └─types
+│          category.enum.ts
+│
+├─common
+│  └─decorator
+│          typeorm-ex.decorator.ts
+│          typeorm-ex.module.ts
+│
+├─config
+│      typeorm.config.ts
+│
+├─expenses
+│  │  expenses.controller.ts
+│  │  expenses.module.ts
+│  │  expenses.repository.ts
+│  │  expenses.service.ts
+│  │  statistics.service.ts
+│  │
+│  ├─dto
+│  │      expensesDto.ts
+│  │
+│  └─entities
+│          expenses.entity.ts
+│
+└─user
+    │  user.controller.spec.ts
+    │  user.controller.ts
+    │  user.module.ts
+    │  user.repository.ts
+    │  user.service.spec.ts
+    │  user.service.ts
+    │
+    └─entities
+            refresh.entity.ts
+            user.entity.ts
 ```
 
-## Running the app
+</details>
+</br>
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
