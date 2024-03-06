@@ -7,14 +7,17 @@ export const typeORMConfig = async (
 ): Promise<TypeOrmModuleOptions> => {
   return {
     type: 'postgres',
-    host: configService.get<string>('DB_HOSTNAME') || 'localhost',
+    host: configService.get<string>('DB_HOST') || 'localhost',
     port: parseInt(configService.get<string>('DB_PORT')) || 5432,
     username: configService.get<string>('DB_USERNAME') || 'postgres',
-    password: configService.get<string>('DB_PASSWORD') || '0000',
+    password: configService.get<string>('DB_PASSWORD') || '1234',
     database: configService.get<string>('DB_DATABASE') || 'postgres',
     entities: [__dirname + '/../**/*.entity.{js,ts}'],
     synchronize: configService.get<boolean>('DB_SYNCHRONIZE') || false,
     namingStrategy: new SnakeNamingStrategy(),
     logging: false,
+    extra: {
+      ssl: { rejectUnauthorized: false },
+    },
   }
 }
