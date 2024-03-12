@@ -16,8 +16,5 @@ export const typeORMConfig = async (
     synchronize: configService.get<boolean>('DB_SYNCHRONIZE') || false,
     namingStrategy: new SnakeNamingStrategy(),
     logging: false,
-    extra: {
-      ssl: { rejectUnauthorized: false },
-    },
   }
 }
