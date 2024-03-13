@@ -4,6 +4,9 @@ FROM node:20-alpine
 # Create app directory
 WORKDIR /usr/src/app
 
+# Copy environment variables file
+COPY .production.env .production.env
+
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
 
