@@ -19,9 +19,8 @@ jobs:
         DOCKER_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
       run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD      
 
-    -name: Generate Environment Variables File for Production
-      run: echo "${{ secrets.PRODUCTION_ENV}}">.production.env
-      env:
+    - name: Generate Environment Variables File for Production
+      run: echo "${{secrets.PRODUCTION_ENV}}" > ./production.env
 
 
     - name: Build the Docker image
