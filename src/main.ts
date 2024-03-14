@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config'
 import { ValidationPipe, Logger } from '@nestjs/common'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { WinstonModule } from 'nest-winston'
+import { setupSwagger } from './common/swagger'
 import * as winston from 'winston'
 import * as moment from 'moment'
 
@@ -94,14 +95,7 @@ async function bootstrap() {
     }),
   })
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('please insert project name')
-    .setDescription('The [project name] API description')
-    .setVersion('1.0.0')
-    .addBearerAuth()
-    .build()
-  const document = SwaggerModule.createDocument(app, swaggerConfig)
-  SwaggerModule.setup('swagger', app, document)
+  setupSwagger(app)
 
   app.useGlobalPipes(
     new ValidationPipe({
