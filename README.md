@@ -5,18 +5,6 @@
 
 <br/>
 
-## Table of Contents
-
-- [개요](#개요)
-- [API Reference](#api-reference)
-- [ERD](#ERD)
-- [프로젝트 진행 및 이슈 관리](#프로젝트-진행-및-이슈-관리)
-- [구현과정(설계 및 의도)](<#구현과정(설계-및-의도)>)
-- [TIL 및 회고](#til-및-회고)
-- [Authors](#authors)
-
-<br/>
-
 ## 개요
 
 **개인 재무를 관리하고 지출을 추적하는 애플리케이션으로, 예산 설정과 지출 모니터링을 통해 재무 목표를 달성하는 데 도움을 줍니다.**
@@ -31,7 +19,7 @@
 
 언어 및 사용 도구 <br/> ![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white) ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white) ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens) ![Swagger](https://img.shields.io/badge/swagger-%ffffff.svg?style=for-the-badge&logo=swagger&logoColor=white)
 <br/>
-데이터 베이스 <br/>![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)<br/>
+데이터 베이스 <br/>![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white) 
 
 </div>
 
