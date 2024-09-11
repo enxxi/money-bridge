@@ -12,14 +12,16 @@ import { BudgetService } from './budget.service'
 import { BudgetDto } from './dto/budgetDto'
 import { AuthGuard } from '@nestjs/passport'
 import { GetUser } from 'src/auth/get-user.decorator'
+import { ApiBearerAuth } from '@nestjs/swagger'
 
 @UseGuards(AuthGuard())
+@ApiBearerAuth('access-token')
 @Controller('budgets')
 export class BudgetController {
   constructor(private readonly budgetService: BudgetService) {}
 
-  @Post()
   @UsePipes(ValidationPipe)
+  @Post()
   async createBudget(
     @Body() budgetDto: BudgetDto.Create,
     @GetUser() userId: string,
@@ -39,4 +41,9 @@ export class BudgetController {
   ): Promise<string> {
     return await this.budgetService.updateBudget(budgetId, budgetDto)
   }
+
+  // @Get()
+  // async getBudgetList():Promise<array>{return await this.budgetService.
+
+  // }
 }

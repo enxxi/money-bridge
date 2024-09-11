@@ -16,8 +16,10 @@ import { ExpensesDto } from './dto/expensesDto'
 import { GetUser } from 'src/auth/get-user.decorator'
 import { AuthGuard } from '@nestjs/passport'
 import { StatisticsService } from './statistics.service'
+import { ApiBearerAuth } from '@nestjs/swagger'
 
 @UseGuards(AuthGuard())
+@ApiBearerAuth('access-token')
 @Controller('expenses')
 export class ExpensesController {
   constructor(
