@@ -7,12 +7,13 @@ import {
   Param,
   UsePipes,
   ValidationPipe,
+  Get,
 } from '@nestjs/common'
 import { BudgetService } from './budget.service'
 import { BudgetDto } from './dto/budgetDto'
 import { AuthGuard } from '@nestjs/passport'
 import { GetUser } from 'src/auth/get-user.decorator'
-import { ApiBearerAuth } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger'
 
 @UseGuards(AuthGuard())
 @ApiBearerAuth('access-token')
@@ -22,6 +23,7 @@ export class BudgetController {
 
   @UsePipes(ValidationPipe)
   @Post()
+  @ApiOperation({ summary: '예산 설정' })
   async createBudget(
     @Body() budgetDto: BudgetDto.Create,
     @GetUser() userId: string,
@@ -42,8 +44,8 @@ export class BudgetController {
     return await this.budgetService.updateBudget(budgetId, budgetDto)
   }
 
-  // @Get()
-  // async getBudgetList():Promise<array>{return await this.budgetService.
-
-  // }
+  @Get()
+  async getBudgetList(@GetUser() userId: string): Promise<object> {
+    return await this.budgetService.getBudgetList(userId)
+  }
 }

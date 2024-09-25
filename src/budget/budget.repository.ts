@@ -68,4 +68,11 @@ export class BudgetRepository extends Repository<Budget> {
       .getOne()
     return budget
   }
+
+  async getBudgetList(userId: string) {
+    return await this.find({
+      where: { user: { id: userId } },
+      relations: ['category', 'expenses'],
+    })
+  }
 }

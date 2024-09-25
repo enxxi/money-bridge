@@ -6,7 +6,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { BudgetRepository } from './budget.repository'
 import { BudgetDto } from './dto/budgetDto'
-import { UserRepository } from 'src/user/user.repository'
 
 @Injectable()
 export class BudgetService {
@@ -92,6 +91,16 @@ export class BudgetService {
       return recommendedBudget
     } catch (error) {
       throw new InternalServerErrorException('예산 추천에 실패했습니다.')
+    }
+  }
+
+  async getBudgetList(userId: string) {
+    try {
+      const budgets = await this.budgetRepository.getBudgetList(userId)
+
+      return budgets
+    } catch {
+      throw new InternalServerErrorException('예산 리스트 반환에 실패했습니다.')
     }
   }
 
